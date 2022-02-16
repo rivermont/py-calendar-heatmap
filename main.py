@@ -4,12 +4,9 @@ from colour import Color as color
 from datetime import datetime, timedelta
 from numpy import linspace
 
-# random data
-data = """{
-  "2022-01-01": {"git": "2", "osm": "23", "ebird": "1", "mw": "1"},
-  "2022-01-02": {"git": "0", "osm": "10", "ebird": "2", "inat": "1", "obs": "0"}
-}
-"""
+# sample data
+with open("./data1.json", "r") as f:
+    data = f.read()
 
 t = datetime.now()  # date of today
 w = int(t.strftime("%w"))  # weekday of today
@@ -39,7 +36,9 @@ data = json.loads(data)
 
 for d in data:
     for x in data[d]:
-        days[d]['contribs'] += int(data[d][x])
+        try:
+            days[d]['contribs'] += int(data[d][x])
+        except KeyError: pass  # date not in the last year
 
 # get range of contrib values
 contribs = set([days[x]['contribs'] for x in days])
@@ -47,19 +46,20 @@ contribs = sorted(contribs)
 l = 1
 h = contribs[-1]
 
-classes = 5  # number of color classes
+classes = 25  # number of color classes
+# ^ diminishing returns around 25, unless there's a better color range function
 
 # contrib value range
 range_ = linspace(l, h, classes)
 
 # color range
-top = color("#1b6228")
-colors = list(top.range_to("#c6e48b", classes))
+top = color("#c6e48b")
+colors = list(top.range_to("#1b6228", classes))
 
 ranges = {}
 for i in range(classes):
     ranges[range_[i]] = colors[i]
-
+    
 
 # calculate color value for the day and add to dict
 for i in days:
