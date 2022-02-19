@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 import csv
 
+# maybe need separate function to add date to dict and return dict
+
 def ingest_ebird(filename="./MyEBirdData.csv"):
     """Process the data export from eBird and output json to be used
     in the calender. The data comes as csv, with each line being an individual
@@ -29,11 +31,19 @@ def ingest_git(filename):
     return None
 
 
-def ingest_inat(filename):
-    with open(filename, 'r') as f:
-        pass
+def ingest_inat(filename="./inat.csv"):
+    """https://www.inaturalist.org/observations/export
+    only need observed_on column"""
+    dates = {}
     
-    return None
+    with open(filename, 'r') as f:
+        for row in f.readlines():
+            try:
+                dates[row.strip()]["count"] += 1
+            except KeyError:
+                dates[row.strip()] = {"count": 1}
+    
+    return dates
 
 
 def ingest_wiki(filename):
@@ -58,5 +68,15 @@ def ingest_obs(filename):
 
 
 with open("data2.json", "w+") as f:
-    f.write('"'.join(str(ingest_ebird()).split("'")))
+    data = {}
+    e = ingest_ebird()
+    i = ingest_inat()
+    for a in (e, i):
+        for x in a:
+            try:
+                data[x]["count"] += a[x]["count"]
+            except KeyError:
+                data[x] = {"count": a[x]["count"]}
+    
+    f.write('"'.join(str(data).split("'")))
 
