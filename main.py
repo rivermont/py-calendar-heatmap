@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 from numpy import linspace
 
 # sample data
-with open("./data1.json", "r") as f:
+with open("./data2.json", "r") as f:
     data = f.read()
 
 t = datetime.now()  # date of today
@@ -40,14 +40,16 @@ for d in data:
             days[d]['contribs'] += int(data[d][x])
         except KeyError: pass  # date not in the last year
 
+del data
+
 # get range of contrib values
 contribs = set([days[x]['contribs'] for x in days])
 contribs = sorted(contribs)
 l = 1
 h = contribs[-1]
 
-classes = 25  # number of color classes
-# ^ diminishing returns around 25, unless there's a better color range function
+# number of color classes, diminishing returns around 25, unless there's a better color range function
+classes = 25
 
 # contrib value range
 range_ = linspace(l, h, classes)
@@ -59,7 +61,7 @@ colors = list(top.range_to("#1b6228", classes))
 ranges = {}
 for i in range(classes):
     ranges[range_[i]] = colors[i]
-    
+
 
 # calculate color value for the day and add to dict
 for i in days:
