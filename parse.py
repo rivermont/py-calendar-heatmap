@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-import csv
+from csv import DictReader
+from time import strftime
+import requests
+import xml.etree.ElementTree as ET
 
 # maybe need separate function to add date to dict and return dict
 
@@ -11,7 +14,7 @@ def ingest_ebird(filename="./MyEBirdData.csv"):
     dates = {}
     
     with open(filename, "r") as f:
-        reader = csv.DictReader(f)
+        reader = DictReader(f)
         for row in reader:
             id_ = row["Submission ID"]
             if id_ not in ids:
@@ -20,7 +23,7 @@ def ingest_ebird(filename="./MyEBirdData.csv"):
                     dates[row["Date"]]["count"] += 1
                 except KeyError:
                     dates[row["Date"]] = {"count": 1}
-
+    
     return dates
 
 
@@ -53,11 +56,29 @@ def ingest_wiki(filename):
     return None
 
 
-def ingest_osm(filename):
-    with open(filename, 'r') as f:
-        pass
+def ingest_osm(username):
+    t1 = strftime("%Y-%m-%dT%H:%M:%S%z")
+    print(t1)
+    dates = {}
     
-    return None
+    running = True
+    while running:
+        url = f"https://api.openstreetmap.org/api/0.6/changesets?display_name={username}&time=1900-01-01,{t1}"
+        response = requests.get(url).content
+        root = ET.fromstring(response)
+        
+        for i in root:
+            x = i.attrib['created_at']
+            try:
+                dates[x[:10]]["count"] += 1
+            except KeyError:
+                dates[x[:10]] = {"count": 1}
+        
+        if len(dates) > 366: break  # stop requesting data after at least a year ago
+        if t1 == root[-1].attrib['created_at']: break
+        t1 = root[-1].attrib['created_at']  # get time of oldest changeset in batch
+    
+    return dates
 
 
 def ingest_obs(filename):
@@ -67,11 +88,12 @@ def ingest_obs(filename):
     return None
 
 
-with open("data2.json", "w+") as f:
+with open("data.json", "w+") as f:
     data = {}
     e = ingest_ebird()
     i = ingest_inat()
-    for a in (e, i):
+    o = ingest_osm('rivermont')
+    for a in (e, i, o):
         for x in a:
             try:
                 data[x]["count"] += a[x]["count"]

@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 from numpy import linspace
 
 # sample data
-with open("./data2.json", "r") as f:
+with open("./data.json", "r") as f:
     data = f.read()
 
 t = datetime.now()  # date of today
@@ -63,7 +63,7 @@ for i in range(classes):
     ranges[range_[i]] = colors[i]
 
 
-# calculate color value for the day and add to dict
+# calculate color value for each day and add to dict
 for i in days:
     for x in ranges:
         if x <= days[i]['contribs']:
@@ -79,4 +79,6 @@ with open("./calendar.svg", "w+") as f:
         f.write(o + "\n")
     
     f.write("""</svg>""")
+
+# print(sum([days[d]['contribs'] for d in days]))  # total contribs in last year
 
