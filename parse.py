@@ -6,7 +6,7 @@ import xml.etree.ElementTree as ET
 
 # maybe need separate function to add date to dict and return dict
 
-def ingest_ebird(filename="./MyEBirdData.csv"):
+def ingest_ebird(filename="./data/MyEBirdData.csv"):
     """Process the data export from eBird and output json to be used
     in the calender. The data comes as csv, with each line being an individual
     bird observation."""
@@ -28,18 +28,18 @@ def ingest_ebird(filename="./MyEBirdData.csv"):
 
 
 def ingest_git(filename):
-    with open(filename, 'r') as f:
+    with open(filename, "r") as f:
         pass
     
     return None
 
 
-def ingest_inat(filename="./inat.csv"):
+def ingest_inat(filename="./data/inat.csv"):
     """https://www.inaturalist.org/observations/export
     only need observed_on column"""
     dates = {}
     
-    with open(filename, 'r') as f:
+    with open(filename, "r") as f:
         for row in f.readlines():
             try:
                 dates[row.strip()]["count"] += 1
@@ -50,7 +50,7 @@ def ingest_inat(filename="./inat.csv"):
 
 
 def ingest_wiki(filename):
-    with open(filename, 'r') as f:
+    with open(filename, "r") as f:
         pass
     
     return None
@@ -58,7 +58,6 @@ def ingest_wiki(filename):
 
 def ingest_osm(username):
     t1 = strftime("%Y-%m-%dT%H:%M:%S%z")
-    print(t1)
     dates = {}
     
     running = True
@@ -68,7 +67,7 @@ def ingest_osm(username):
         root = ET.fromstring(response)
         
         for i in root:
-            x = i.attrib['created_at']
+            x = i.attrib["created_at"]
             try:
                 dates[x[:10]]["count"] += 1
             except KeyError:
@@ -82,18 +81,26 @@ def ingest_osm(username):
 
 
 def ingest_obs(filename):
-    with open(filename, 'r') as f:
-        pass
+    dates = {}
     
-    return None
+    with open(filename, "r") as f:
+        reader = DictReader(f)
+        for row in reader:
+            try:
+                dates[row["date"]]["count"] += 1
+            except KeyError:
+                dates[row["date"]] = {"count": 1}
+    
+    return dates
 
 
 with open("data.json", "w+") as f:
     data = {}
     e = ingest_ebird()
     i = ingest_inat()
-    o = ingest_osm('rivermont')
-    for a in (e, i, o):
+    o = ingest_osm("rivermont")
+    b = ingest_obs("./data/observations-will-bennett.csv")
+    for a in (e, i, o, b):
         for x in a:
             try:
                 data[x]["count"] += a[x]["count"]
