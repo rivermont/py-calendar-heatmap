@@ -60,8 +60,7 @@ def ingest_osm(username):
     t1 = strftime("%Y-%m-%dT%H:%M:%S%z")
     dates = {}
     
-    running = True
-    while running:
+    while True:
         url = f"https://api.openstreetmap.org/api/0.6/changesets?display_name={username}&time=1900-01-01,{t1}"
         response = requests.get(url).content
         root = ET.fromstring(response)
@@ -74,13 +73,14 @@ def ingest_osm(username):
                 dates[x[:10]] = {"count": 1}
         
         if len(dates) > 366: break  # stop requesting data after at least a year ago
-        if t1 == root[-1].attrib['created_at']: break
-        t1 = root[-1].attrib['created_at']  # get time of oldest changeset in batch
+        if t1 == root[-1].attrib["created_at"]: break  # if it's the last page
+        t1 = root[-1].attrib["created_at"]  # get time of oldest changeset in batch
     
     return dates
 
 
 def ingest_obs(filename):
+    """Process csv data export from observation.org"""
     dates = {}
     
     with open(filename, "r") as f:
@@ -94,7 +94,7 @@ def ingest_obs(filename):
     return dates
 
 
-with open("data.json", "w+") as f:
+if __name__ == "__main__":
     data = {}
     e = ingest_ebird()
     i = ingest_inat()
@@ -107,5 +107,6 @@ with open("data.json", "w+") as f:
             except KeyError:
                 data[x] = {"count": a[x]["count"]}
     
-    f.write('"'.join(str(data).split("'")))
+    with open("data.json", "w+") as f:
+        f.write('"'.join(str(data).split("'")))
 
