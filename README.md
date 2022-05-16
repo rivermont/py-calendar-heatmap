@@ -4,6 +4,8 @@ It will be designed rather specifically around my requirements as it is intended
 Instead of using D3 or other collections of Javascript that need sent to the website viewer, I might just generate a daily svg server-side and include that in the page.
 Also, it probably would be faster if written in Go or some other langugage but I know Python so here it is.
 
+![calendar](https://raw.githubusercontent.com/rivermont/py-calendar-heatmap/main/calendar.svg)
+
 ### Design
 Color scheme will be similar to GitHub's green scale, possibly with a light red for days with 0 contributions (I aim to have contributions on some platform every day).
 Hovering over a date square will have either a tooltip or text above/below the heatmap with the date and number of contributions.
