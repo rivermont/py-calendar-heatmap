@@ -48,7 +48,8 @@ contribs = sorted(contribs)
 l = 1
 h = contribs[-1]
 
-# number of color classes, diminishing returns around 25, unless there's a better color range function
+# number of color classes, diminishing returns around 25
+# unless there's a better color range function
 classes = 25
 
 # contrib value range
@@ -75,7 +76,7 @@ with open("./calendar.svg", "w+") as f:
     f.write("""<svg xmlns="http://www.w3.org/2000/svg" width="634" height="82">\n""")
     
     for c in days:
-        o = f"""<rect name="{days[c]['date']}" alt="{days[c]['contribs']}" fill="{"%s" % days[c]['color']}" width="10" height="10" y="{days[c]['y']}" x="{days[c]['x']}" />"""
+        o = f"""<rect fill="{"%s" % days[c]['color']}" width="10" height="10" y="{days[c]['y']}" x="{days[c]['x']}"><title>{days[c]['date']}: {days[c]['contribs']}</title></rect>"""
         f.write(o + "\n")
     
     f.write("""</svg>""")
