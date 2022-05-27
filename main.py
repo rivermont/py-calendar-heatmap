@@ -73,6 +73,7 @@ for i in days:
 
 # generate svg code
 with open("./calendar.svg", "w+") as f:
+    f.write("""<!-- Created by rivermont (https://github.com/rivermont/py-calendar-heatmap) -->\n""")
     f.write("""<svg xmlns="http://www.w3.org/2000/svg" width="634" height="82">\n""")
     
     for c in days:
