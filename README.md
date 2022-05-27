@@ -4,14 +4,14 @@ Generate an svg calendar heatmap - similar to GitHub and others' - from several 
 ![calendar](https://raw.githubusercontent.com/rivermont/py-calendar-heatmap/main/calendar.svg)
 
 ### Usage
-- Supports contributions from eBird (checklists), iNaturalist and Observation.org (observations), and OpenStreetMap (changesets).
+- Supports contributions from GitHub, eBird (checklists), iNaturalist and Observation.org (observations), and OpenStreetMap (changesets).
 - Copy data exports from the first three to a `data` folder, and update the function parameters at the end of `parse.py`.
 - Run `parse` and then `main.py` to generate the svg output, which can then be included in a webpage as an `img` or `object`.
 
 Hovering over a date square will have either a tooltip or text above/below the heatmap with the date and number of contributions.
 
 ### Future improvements
-- Add processing for Git/Hub commits and edits from Mediawiki sites
+- Add processing for edits from Mediawiki sites
 - Eventually there will be options below the calendar to filter contributions by de/selecting sources.
 
 <!--maybe use later, once active filtering works:

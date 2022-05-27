@@ -3,6 +3,7 @@ from csv import DictReader
 from time import strftime
 import requests
 import xml.etree.ElementTree as ET
+from lxml import html
 
 # maybe need separate function to add date to dict and return dict
 
@@ -27,11 +28,19 @@ def ingest_ebird(filename="./data/MyEBirdData.csv"):
     return dates
 
 
-def ingest_git(filename):
-    with open(filename, "r") as f:
-        pass
+def ingest_github(username):
+    dates = {}
+    url = f"https://github.com/{username}"
     
-    return None
+    response = requests.get(url).content
+    root = html.fromstring(response)
+    
+    for i in root.iter("rect"):
+        try:
+            dates[i.attrib["data-date"]] = {"count": int(i.attrib["data-count"])}
+        except KeyError: pass
+    
+    return dates
 
 
 def ingest_inat(filename="./data/inat.csv"):
@@ -97,10 +106,11 @@ def ingest_obs(filename):
 if __name__ == "__main__":
     data = {}
     e = ingest_ebird()
+    g = ingest_github("rivermont")
     i = ingest_inat()
     o = ingest_osm("rivermont")
     b = ingest_obs("./data/observations-will-bennett.csv")
-    for a in (e, i, o, b):
+    for a in (e, g, i, o, b):
         for x in a:
             try:
                 data[x]["count"] += a[x]["count"]
